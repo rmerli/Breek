@@ -1,0 +1,16 @@
+config {
+  {
+		source: "tmux",
+		target: "~/config/tmux/",
+		commands: [
+			"sudo pacman -S tmux"
+		]
+	}
+}
+
+
+root
+ -tmux
+ -waybar
+ -hyprlock
+ -neovim/ install.sh 
