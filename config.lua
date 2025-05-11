@@ -1,4 +1,12 @@
-return {
+-- example config
+
+local order = {
+	"wezterm",
+	"neovim",
+	"tmux",
+}
+
+local packages = {
 	wezterm = {
 		configure = {
 			{
@@ -49,4 +57,9 @@ return {
 			},
 		},
 	},
+}
+
+return {
+	order = order,
+	packages = packages,
 }

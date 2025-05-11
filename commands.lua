@@ -6,7 +6,7 @@ local M = {
 
 -- Config validation
 local function validate_package(pkg_name)
-	if M.config[pkg_name] == nil then
+	if M.config.packages[pkg_name] == nil then
 		print(" -> Error: package " .. pkg_name .. " does not exist; check config.lua")
 		return false
 	end
@@ -28,7 +28,7 @@ function M.install(pkg_name, dry)
 	if not validate_package(pkg_name) then
 		return
 	end
-	local pkg = M.config[pkg_name]
+	local pkg = M.config.packages[pkg_name]
 
 	if not is_valid_field(pkg, cmd_name) then
 		print("Error: package config does not have command: " .. cmd_name)
@@ -39,17 +39,25 @@ function M.install(pkg_name, dry)
 		if dry then
 			print("dry run executing -> " .. cmd)
 		else
+			print(cmd)
 			os.execute(cmd)
 		end
 	end
 end
 
+local function loop_packages(callable)
+	for _, name in ipairs(M.config.order) do
+		callable(name)
+	end
+end
+
 function M.install_all(args)
 	print("Installing all packages\n")
-	for name in pairs(M.config) do
+
+	loop_packages(function(name)
 		M.install(name, args.dry)
 		print()
-	end
+	end)
 end
 
 function M.configure(pkg_name, dry)
@@ -59,7 +67,7 @@ function M.configure(pkg_name, dry)
 	if not validate_package(pkg_name) then
 		return
 	end
-	local pkg = M.config[pkg_name]
+	local pkg = M.config.packages[pkg_name]
 
 	if not is_valid_field(pkg, cmd_name) then
 		print("Error: package config does not have command: " .. cmd_name)
@@ -84,7 +92,7 @@ function M.configure(pkg_name, dry)
 			print("Copying " .. src .. " to " .. dst)
 		else
 			if fs.path_exists(dst) and fs.file_type(src) == fs.file_type(dst) then
-				fs.remove_path(dst)
+				fs.remove(dst)
 			end
 			if fs.path_exists(dst) and fs.is_file(dst) and fs.is_dir(src) then
 				print("Error: destination exists as file but source is directory: " .. dst)
@@ -97,10 +105,11 @@ end
 
 function M.configure_all(args)
 	print("Configuring all packages...\n")
-	for name in pairs(M.config) do
+
+	loop_packages(function(name)
 		M.configure(name, args.dry)
 		print()
-	end
+	end)
 end
 
 function M.remove_pkg(pkg_name, dry)
@@ -110,7 +119,7 @@ function M.remove_pkg(pkg_name, dry)
 	if not validate_package(pkg_name) then
 		return
 	end
-	local pkg = M.config[pkg_name]
+	local pkg = M.config.packages[pkg_name]
 
 	if not is_valid_field(pkg, cmd_name) then
 		print("Error: package config does not have command: " .. cmd_name)
@@ -128,10 +137,10 @@ end
 
 function M.remove_all(args)
 	print("Removing all packages\n")
-	for name in pairs(M.config) do
+	loop_packages(function(name)
 		M.remove_pkg(name, args.dry)
 		print()
-	end
+	end)
 end
 
 return M
