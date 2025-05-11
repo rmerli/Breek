@@ -44,7 +44,7 @@
 2. Place `breek` and your `config.lua` in the same directory
 3. Ensure `breek` is executable:
    ```bash
-   chmod +x /usr/local/bin/breek
+   chmod +x ./breek
    ```
 
 ---
