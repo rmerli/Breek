@@ -87,7 +87,7 @@ return {
 - **`order`** (Array): A list of package keys defining the processing sequence.
 - **`packages`** (Map): An object where each key is a package name and the value is a table with up to three sub-tables:
   - `install.commands`  – Array of shell commands to run when installing.
-  - `configure`        – Array of `{ source = <path>, destination = <path> }` entries to copy/configure files.
+  - `configure`        – Array of `{ source = <path>, destination = <path> }` entries. The destination becomes a symlink to the source; add `copy = true` to an entry to copy it instead.
   - `remove.commands`   – Array of shell commands to run when removing.
 
 ### Example Config
@@ -148,7 +148,7 @@ breek install <package|all> [--dry]
 
 ### configure
 
-Copies files/directories from `source` to `destination`. Respects existing files and handles type mismatches. Supports `--dry`.
+Symlinks each `destination` to its `source` (resolved to an absolute path from the directory breek runs in), so edits made in either place land in the repo. An existing file or directory at the destination is moved to `<destination>.bak.<timestamp>` first; a link that already points at the source is left alone. Entries with `copy = true` are copied instead, as before. Supports `--dry`.
 
 ```bash
 breek configure <package|all> [--dry]

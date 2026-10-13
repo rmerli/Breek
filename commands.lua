@@ -87,7 +87,9 @@ function M.configure(pkg_name, dry)
 			return
 		end
 
-		if dry then
+		if not pkg_cfg.copy then
+			fs.link(src, dst, dry)
+		elseif dry then
 			print("Removing " .. dst)
 			print("Copying " .. src .. " to " .. dst)
 		else
